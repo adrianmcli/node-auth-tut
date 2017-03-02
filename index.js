@@ -11,6 +11,23 @@ app.get('/', (req, res) => {
   res.send('hello world')
 })
 
+app.get('/login', (req, res) => {
+  res.send('login page')
+})
+
+app.get('/signup', (req, res) => {
+  res.send('signup page')
+})
+
+app.get('/profile', (req, res) => {
+  res.send('profile page')
+})
+
+app.get('/logout', (req, res) => {
+  // req.logout()  // TODO - implement this later
+  res.redirect('/')
+})
+
 app.listen(port, () => {
   console.log(`server running on port: ${port}`)
 })
