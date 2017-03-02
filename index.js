@@ -8,19 +8,19 @@ app.set('view engine', 'ejs')
 // require('./app/routes.js')(app)
 
 app.get('/', (req, res) => {
-  res.send('hello world')
+  res.render('index.ejs')
 })
 
 app.get('/login', (req, res) => {
-  res.send('login page')
+  res.render('login.ejs')
 })
 
 app.get('/signup', (req, res) => {
-  res.send('signup page')
+  res.render('signup.ejs')
 })
 
 app.get('/profile', (req, res) => {
-  res.send('profile page')
+  res.render('profile.ejs')
 })
 
 app.get('/logout', (req, res) => {
