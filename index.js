@@ -7,6 +7,9 @@ app.set('view engine', 'ejs')
 // TODO - routes will be in its own file later
 // require('./app/routes.js')(app)
 
+// temp route middleware to ensure authenticated users only
+const isLoggedIn = (req, res, next) => false ? next() : res.redirect('/')
+
 app.get('/', (req, res) => {
   res.render('index.ejs')
 })
@@ -19,7 +22,7 @@ app.get('/signup', (req, res) => {
   res.render('signup.ejs')
 })
 
-app.get('/profile', (req, res) => {
+app.get('/profile', isLoggedIn, (req, res) => {
   res.render('profile.ejs')
 })
 
