@@ -167,7 +167,7 @@ app.get('/profile', isLoggedIn, (req, res) => {
 })
 
 app.get('/logout', (req, res) => {
-  // req.logout()  // TODO - implement this later
+  req.logout()
   res.redirect('/')
 })
 
