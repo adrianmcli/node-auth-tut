@@ -163,7 +163,7 @@ app.get('/signup', (req, res) => {
 })
 
 app.get('/profile', isLoggedIn, (req, res) => {
-  res.render('profile.ejs')
+  res.render('profile.ejs', { user: req.user })
 })
 
 app.get('/logout', (req, res) => {
