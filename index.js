@@ -17,11 +17,15 @@ app.use(morgan('dev'))
 const cookieParser = require('cookie-parser') // read cookies (for auth)
 const bodyParser = require('body-parser')     // parse post requests
 app.use(cookieParser())
-app.use(bodyParser())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 // Setup session (and the session secret)
 const session = require('express-session')
-app.use(session({ secret: 'thisismysecret' }))
+app.use(session({
+  secret: 'thisismysecret',
+  resave: false,
+  saveUninitialized: false,
+}))
 
 /*
  * 1. DATABASE SETUP
@@ -76,7 +80,10 @@ passport.deserializeUser((id, done) =>
 const loginVerificationFn = (req, email, password, done) => {
   process.nextTick(() => {
     User.findOne({ 'local.email': email }, (err, user) => {
-      if (err) return done(err)
+      if (err) {
+        console.log(err)
+        return done(err)
+      }
       if (user) {
         console.log('User already exists!')
         return done(null, false)
