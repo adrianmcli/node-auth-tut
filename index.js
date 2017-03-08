@@ -49,8 +49,9 @@ const userSchema = mongoose.Schema({
 userSchema.methods.generateHash = password =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
 
-userSchema.methods.validPassword = password =>
-  bcrypt.compareSync(password, this.local.password)
+userSchema.methods.validPassword = function (password) {
+  return bcrypt.compareSync(password, this.local.password)
+}
 
 // expose the model for usage
 const User = mongoose.model('User', userSchema)
@@ -77,7 +78,7 @@ passport.deserializeUser((id, done) =>
 //    mongo is async, but node cannot wait for it
 // b. in Mongo, we try to find the user, if it doesn't exist
 //    then we create a new user
-const loginVerificationFn = (req, email, password, done) => {
+const signupHandler = (req, email, password, done) => {
   process.nextTick(() => {
     User.findOne({ 'local.email': email }, (err, user) => {
       if (err) {
@@ -101,13 +102,40 @@ const loginVerificationFn = (req, email, password, done) => {
   })
 }
 
+const loginHandler = (req, email, password, done) => {
+  User.findOne({ 'local.email': email }, (err, user) => {
+    if (err) {
+      console.log(err)
+      return done(err)
+    }
+    if (!user) {
+      console.log('User not found!')
+      return done(null, false)
+    }
+    if (!user.validPassword(password)) {
+      console.log('Invalid passowrd!')
+      return done(null, false)
+    }
+    // all good, return the user object
+    return done(null, user)
+  })
+}
+
 // Build and use the "local-signup" strategy
-const localStrategyOptions = {
+const localSignupOptions = {
   usernameField: 'email',
   passwordField: 'password',
   passReqToCallback: true,
 }
-passport.use('local-signup', new LocalStrategy(localStrategyOptions, loginVerificationFn))
+passport.use('local-signup', new LocalStrategy(localSignupOptions, signupHandler))
+
+// Build and use the "local-login" strategy
+const localLoginOptions = {
+  usernameField: 'email',
+  passwordField: 'password',
+  passReqToCallback: true,
+}
+passport.use('local-login', new LocalStrategy(localLoginOptions, loginHandler))
 
 // Initialize passport
 app.use(passport.initialize())
@@ -149,6 +177,11 @@ app.get('/logout', (req, res) => {
 app.post('/signup', passport.authenticate('local-signup', {
   successRedirect: '/profile',
   failureRedirect: '/signup',
+}))
+
+app.post('/login', passport.authenticate('local-login', {
+  successRedirect: '/profile',
+  failureRedirect: '/login',
 }))
 
 /*
