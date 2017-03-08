@@ -101,7 +101,7 @@ const loginVerificationFn = (req, email, password, done) => {
   })
 }
 
-// Build and use the strategy
+// Build and use the "local-signup" strategy
 const localStrategyOptions = {
   usernameField: 'email',
   passwordField: 'password',
@@ -145,6 +145,7 @@ app.get('/logout', (req, res) => {
 
 // POST Routes
 
+// authenticate with the local-signup strategy declared above
 app.post('/signup', passport.authenticate('local-signup', {
   successRedirect: '/profile',
   failureRedirect: '/signup',
